@@ -31,17 +31,17 @@ func NewAgent(userAgent string) Agent {
 	}
 }
 
-// GetBrowser implements the Agentable interface
-func (a Agent) GetBrowser() string {
+// Browser implements the Agentable interface
+func (a Agent) Browser() string {
 	return a.browser
 }
 
-// GetOS implements the Agentable interface
-func (a Agent) GetOS() string {
+// OS implements the Agentable interface
+func (a Agent) OS() string {
 	return a.os
 }
 
-// GetDevice implements the Agentable interface
-func (a Agent) GetDevice() string {
+// Device implements the Agentable interface
+func (a Agent) Device() string {
 	return a.device
 }
