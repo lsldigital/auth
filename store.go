@@ -28,7 +28,9 @@ type Record struct {
 	SessionID   string `storm:"id,index"`
 	SessionType int
 	UserID      string `storm:"index"`
-	UserAgent   Agentable
+	UABrowser   string
+	UAOS        string
+	UADevice    string
 	Permissions []string
 	OriginID    string `storm:"index"`
 	Origin      string
@@ -52,7 +54,9 @@ func (s Store) Save(session Sessionable) error {
 		SessionID:   session.SessionID(),
 		SessionType: session.SessionType(),
 		UserID:      session.UserID(),
-		UserAgent:   session.UserAgent(),
+		UABrowser:   session.UserAgent().Browser(),
+		UAOS:        session.UserAgent().OS(),
+		UADevice:    session.UserAgent().Device(),
 		Permissions: session.Permissions(),
 		OriginID:    session.OriginID(),
 		Origin:      session.Origin(),
@@ -85,11 +89,16 @@ func (s Store) Get(session Sessionable, limit int) (Sessionables, error) {
 
 	var sessions Sessions
 	for _, r := range records {
+		ua := Agent{
+			browser: r.UABrowser,
+			os:      r.UAOS,
+			device:  r.UADevice,
+		}
 		sessions = append(sessions, Session{
 			sessionID:   r.SessionID,
 			sessionType: r.SessionType,
 			userID:      r.UserID,
-			userAgent:   r.UserAgent,
+			userAgent:   ua,
 			permissions: r.Permissions,
 			originID:    r.OriginID,
 			origin:      r.Origin,
