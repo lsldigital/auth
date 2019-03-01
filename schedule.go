@@ -14,8 +14,13 @@ type Schedulable interface {
 
 // Scheduler implements the Schedulable interface
 type Scheduler struct {
-	DB      *storm.DB
-	Running bool
+	db      *storm.DB
+	running bool
+}
+
+// NewScheduler returns a new Scheduler
+func NewScheduler(db *storm.DB) *Scheduler {
+	return &Scheduler{db: db}
 }
 
 // Start implements the Schedulable interface
@@ -30,5 +35,5 @@ func (s Scheduler) Stop() error {
 
 // IsRunning implements the Schedulable interface
 func (s Scheduler) IsRunning() bool {
-	return s.Running
+	return s.running
 }

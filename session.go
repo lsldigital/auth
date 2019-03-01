@@ -1,72 +1,110 @@
 package auth
 
 import (
-	"fmt"
-	"strings"
 	"time"
 
-	"github.com/avct/uasurfer"
+	uuid "github.com/satori/go.uuid"
 )
 
 type Sessionable interface {
-	GetID() string
-	GetUserID() string
-	GetOriginID() string
-	GetCreatedAt() time.Time
-	GetExpiry() time.Duration // Used by scheduler
-}
-
-type Agent struct {
-	Browser string
-	OS      string
-	Device  string
-}
-
-// NewAgent returns a new Agent
-func NewAgent(userAgent string) Agent {
-	ua := uasurfer.Parse(userAgent)
-
-	return Agent{
-		Browser: strings.Replace(fmt.Sprintf("%v - %v", ua.Browser.Name, ua.Browser.Version.Major), "Browser", "", -1),
-		OS:      strings.Replace(fmt.Sprintf("%v - %v", ua.OS.Name, ua.OS.Version.Major), "OS", "", -1),
-		Device:  strings.Replace(fmt.Sprintf("%v", ua.DeviceType), "Device", "", -1),
-	}
+	SessionID() string
+	SessionType() int
+	UserID() string
+	UserAgent() Agentable
+	Permissions() []string
+	OriginID() string
+	Origin() string
+	Expiry() time.Duration // Used by scheduler
+	CreatedAt() time.Time
 }
 
 // Session implements the Sessionable interface
 type Session struct {
-	ID          string
-	Type        int
-	UserID      string
-	UserAgent   Agent
-	OriginID    string
-	Origin      string
-	Permissions []string
-	Expiry      time.Duration
-	CreatedAt   time.Time
+	sessionID   string
+	sessionType int
+	userID      string
+	userAgent   Agentable
+	permissions []string
+	originID    string
+	origin      string
+	expiry      time.Duration
+	createdAt   time.Time
 }
 
-// GetID implements the Sessionable interface
-func (s Session) GetID() string {
-	return s.ID
+// NewSession returns a new Session
+func NewSession(sessionType int, userID string, userAgent Agentable, permissions []string, originID string, origin string, expiry time.Duration) *Session {
+	return &Session{
+		sessionID:   uuid.NewV4().String(),
+		sessionType: sessionType,
+		userID:      userID,
+		userAgent:   userAgent,
+		permissions: permissions,
+		originID:    originID,
+		origin:      origin,
+		expiry:      expiry,
+		createdAt:   time.Now(),
+	}
 }
 
-// GetUserID implements the Sessionable interface
-func (s Session) GetUserID() string {
-	return s.UserID
+// SessionID implements the Sessionable interface
+func (s Session) SessionID() string {
+	return s.sessionID
 }
 
-// GetOriginID implements the Sessionable interface
-func (s Session) GetOriginID() string {
-	return s.OriginID
+// SessionType implements the Sessionable interface
+func (s Session) SessionType() int {
+	return s.sessionType
 }
 
-// GetCreatedAt implements the Sessionable interface
-func (s Session) GetCreatedAt() time.Time {
-	return s.CreatedAt
+// UserID implements the Sessionable interface
+func (s Session) UserID() string {
+	return s.userID
 }
 
-// GetExpiry implements the Sessionable interface
-func (s Session) GetExpiry() time.Duration {
-	return s.Expiry
+// UserAgent implements the Sessionable interface
+func (s Session) UserAgent() Agentable {
+	return s.userAgent
+}
+
+// Permissions implements the Sessionable interface
+func (s Session) Permissions() []string {
+	return s.permissions
+}
+
+// OriginID implements the Sessionable interface
+func (s Session) OriginID() string {
+	return s.originID
+}
+
+// Origin implements the Sessionable interface
+func (s Session) Origin() string {
+	return s.origin
+}
+
+// Expiry implements the Sessionable interface
+func (s Session) Expiry() time.Duration {
+	return s.expiry
+}
+
+// CreatedAt implements the Sessionable interface
+func (s Session) CreatedAt() time.Time {
+	return s.createdAt
+}
+
+type Sessionables interface {
+	Length() int
+	Get(i int) Sessionable
+}
+
+// Sessions implements the Sessionables interface
+type Sessions []Session
+
+// Length implements the Sessionables interface
+func (s Sessions) Length() int {
+	return len(s)
+}
+
+// Get implements the Sessionables interface
+func (s Sessions) Get(i int) Sessionable {
+	return s[i]
 }

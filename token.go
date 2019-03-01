@@ -1,28 +1,49 @@
 package auth
 
 type Tokenable interface {
-	GetID() string
-	GetUsername() string
+	ID() string
+	Username() string
+	HasPermission(permission string) bool
 	String() string
 }
 
 // Token implements the Tokenable interface
 type Token struct {
-	ID       string
-	Username string
+	id          string
+	username    string
+	permissions []string
 }
 
-// GetID implements the Tokenable interface
-func (t Token) GetID() string {
-	return t.ID
+// NewToken returns a new Token
+func NewToken(id string, username string, permissions []string) *Token {
+	return &Token{
+		id:          id,
+		username:    username,
+		permissions: permissions,
+	}
 }
 
-// GetUsername implements the Tokenable interface
-func (t Token) GetUsername() string {
-	return t.Username
+// ID implements the Tokenable interface
+func (t Token) ID() string {
+	return t.id
+}
+
+// Username implements the Tokenable interface
+func (t Token) Username() string {
+	return t.username
+}
+
+// HasPermission implements the Tokenable interface
+func (t Token) HasPermission(permission string) bool {
+	for _, p := range t.permissions {
+		if p == permission {
+			return true
+		}
+	}
+	return false
 }
 
 // String implements the Tokenable and Stringer interfaces
 func (t Token) String() string {
-	return t.ID + " " + t.Username
+	return t.id + " " + t.username
 }
