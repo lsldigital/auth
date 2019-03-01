@@ -1,9 +1,15 @@
 package auth
 
 import (
+	"errors"
 	"time"
+)
 
-	"github.com/asdine/storm"
+var (
+	ErrAlreadyRunning = errors.New("scheduler already running")
+	ErrNotRunning     = errors.New("scheduler not running")
+	ErrStop           = errors.New("scheduler did not stop")
+	ErrTimeout        = errors.New("timed out")
 )
 
 type Schedulable interface {
@@ -14,23 +20,65 @@ type Schedulable interface {
 
 // Scheduler implements the Schedulable interface
 type Scheduler struct {
-	db      *storm.DB
-	running bool
+	store    Storable
+	running  bool
+	stopSig  chan struct{}
+	stopResp chan bool
 }
 
 // NewScheduler returns a new Scheduler
-func NewScheduler(db *storm.DB) *Scheduler {
-	return &Scheduler{db: db}
+func NewScheduler(store Storable) *Scheduler {
+	scheduler := &Scheduler{store: store}
+	scheduler.stopSig = make(chan struct{})
+	scheduler.stopResp = make(chan bool)
+
+	return scheduler
 }
 
 // Start implements the Schedulable interface
 func (s Scheduler) Start(interval time.Duration) error {
+	if s.running {
+		return ErrAlreadyRunning
+	}
+	task := func() {
+		// TODO: implement cleanup functionality
+	}
+	go func() {
+		s.running = true
+		task()
+
+		ticker := time.NewTicker(interval)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ticker.C:
+				task()
+			case <-s.stopSig:
+				s.running = false
+				s.stopResp <- true
+				return
+			}
+		}
+	}()
 	return nil
 }
 
 // Stop implements the Schedulable interface
 func (s Scheduler) Stop() error {
-	return nil
+	if !s.running {
+		return ErrNotRunning
+	}
+	s.stopSig <- struct{}{}
+
+	select {
+	case res := <-s.stopResp:
+		if !res {
+			return ErrStop
+		}
+		return nil
+	case <-time.After(3 * time.Second):
+		return ErrTimeout
+	}
 }
 
 // IsRunning implements the Schedulable interface
