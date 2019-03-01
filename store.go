@@ -9,7 +9,7 @@ import (
 
 type Storable interface {
 	Save(session Sessionable) error
-	Get(session Sessionable, limit int) (Sessionable, error)
+	Get(session Sessionable, limit int) (Sessionables, error)
 	Delete(session Sessionable) error
 }
 
