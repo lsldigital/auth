@@ -6,6 +6,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
+// Sessionable stores session information
 type Sessionable interface {
 	SessionID() string
 	SessionType() int
@@ -91,6 +92,7 @@ func (s Session) CreatedAt() time.Time {
 	return s.createdAt
 }
 
+// Sessionables represents multiple Sessionable
 type Sessionables interface {
 	Length() int
 	Get(i int) Sessionable

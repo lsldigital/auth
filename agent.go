@@ -7,6 +7,7 @@ import (
 	"github.com/avct/uasurfer"
 )
 
+// Agentable stores User-Agent information
 type Agentable interface {
 	Browser() string
 	OS() string

@@ -8,21 +8,24 @@ import (
 	"github.com/asdine/storm/q"
 )
 
+// Storable constants
 const (
 	NoLimit = -1
 )
 
+// Storable errors
 var (
 	ErrNotFound = errors.New("record not found")
 )
 
+// Storable stores session information in <any> store
 type Storable interface {
 	Save(session Sessionable) error
 	Get(session Sessionable, limit int) (Sessionables, error)
 	Delete(session Sessionable) error
 }
 
-// Record is used as the structure for storing
+// Record defines the structure for storing
 // information in the store
 type Record struct {
 	SessionID   string `storm:"id,index"`

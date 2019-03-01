@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// Schedulable errors
 var (
 	ErrAlreadyRunning = errors.New("scheduler already running")
 	ErrNotRunning     = errors.New("scheduler not running")
@@ -12,6 +13,7 @@ var (
 	ErrTimeout        = errors.New("timed out")
 )
 
+// Schedulable cleans expired sessions in <any> store
 type Schedulable interface {
 	Start(interval time.Duration) error
 	Stop() error

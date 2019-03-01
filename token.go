@@ -1,5 +1,6 @@
 package auth
 
+// Tokenable stores token information
 type Tokenable interface {
 	ID() string
 	Username() string

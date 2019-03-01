@@ -1,5 +1,7 @@
 package auth
 
+// Authable regroups primary functions for auth
+// Main interface of auth package
 type Authable interface {
 	Login(username, password string) (Tokenable, error)
 	Logout(token Tokenable) error
