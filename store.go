@@ -1,10 +1,19 @@
 package auth
 
 import (
+	"errors"
 	"time"
 
 	"github.com/asdine/storm"
 	"github.com/asdine/storm/q"
+)
+
+const (
+	NoLimit = -1
+)
+
+var (
+	ErrNotFound = errors.New("record not found")
 )
 
 type Storable interface {
@@ -61,8 +70,7 @@ func (s Store) Save(session Sessionable) error {
 func (s Store) Get(session Sessionable, limit int) (Sessionables, error) {
 	var records []Record
 
-	conditions := getConditions(session)
-	query := s.db.Select(q.And(conditions...))
+	query := s.db.Select(q.And(getConditions(session)...))
 	if limit > 0 {
 		query = query.Limit(limit)
 	}
@@ -72,7 +80,7 @@ func (s Store) Get(session Sessionable, limit int) (Sessionables, error) {
 	}
 
 	if len(records) == 0 {
-		return nil, storm.ErrNotFound
+		return nil, ErrNotFound
 	}
 
 	var sessions Sessions
@@ -95,7 +103,7 @@ func (s Store) Get(session Sessionable, limit int) (Sessionables, error) {
 
 // Delete implements the Storable interface
 func (s Store) Delete(session Sessionable) error {
-	sessions, err := s.Get(session, 0)
+	sessions, err := s.Get(session, NoLimit)
 	if err != nil {
 		return err
 	}
@@ -105,6 +113,7 @@ func (s Store) Delete(session Sessionable) error {
 	return nil
 }
 
+// getConditions returns a list of conditions for indexed fields
 func getConditions(session Sessionable) []q.Matcher {
 	var (
 		conditions []q.Matcher
