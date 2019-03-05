@@ -9,7 +9,7 @@ import (
 // Sessionable stores session information
 type Sessionable interface {
 	SessionID() string
-	SessionType() int
+	SessionType() Type
 	UserID() string
 	UserAgent() Agentable
 	Permissions() []string
@@ -22,7 +22,7 @@ type Sessionable interface {
 // Session implements the Sessionable interface
 type Session struct {
 	sessionID   string
-	sessionType int
+	sessionType Type
 	userID      string
 	userAgent   Agentable
 	permissions []string
@@ -33,7 +33,7 @@ type Session struct {
 }
 
 // NewSession returns a new Session
-func NewSession(sessionType int, userID string, userAgent Agentable, permissions []string, originID string, origin string, expiry time.Duration) *Session {
+func NewSession(sessionType Type, userID string, userAgent Agentable, permissions []string, originID string, origin string, expiry time.Duration) *Session {
 	return &Session{
 		sessionID:   uuid.NewV4().String(),
 		sessionType: sessionType,
@@ -53,7 +53,7 @@ func (s Session) SessionID() string {
 }
 
 // SessionType implements the Sessionable interface
-func (s Session) SessionType() int {
+func (s Session) SessionType() Type {
 	return s.sessionType
 }
 
