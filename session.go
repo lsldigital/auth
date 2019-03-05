@@ -2,8 +2,6 @@ package auth
 
 import (
 	"time"
-
-	uuid "github.com/satori/go.uuid"
 )
 
 // Sessionable stores session information
@@ -21,7 +19,7 @@ type Sessionable interface {
 
 // Session implements the Sessionable interface
 type Session struct {
-	sessionID   string
+	sessionID   string // UUIDv4
 	sessionType Type
 	userID      string
 	userAgent   Agentable
@@ -33,9 +31,9 @@ type Session struct {
 }
 
 // NewSession returns a new Session
-func NewSession(sessionType Type, userID string, userAgent Agentable, permissions []string, originID string, origin string) *Session {
+func NewSession(sessionID string, sessionType Type, userID string, userAgent Agentable, permissions []string, originID string, origin string) *Session {
 	return &Session{
-		sessionID:   uuid.NewV4().String(),
+		sessionID:   sessionID,
 		sessionType: sessionType,
 		userID:      userID,
 		userAgent:   userAgent,
