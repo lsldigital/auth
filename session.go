@@ -33,7 +33,7 @@ type Session struct {
 }
 
 // NewSession returns a new Session
-func NewSession(sessionType Type, userID string, userAgent Agentable, permissions []string, originID string, origin string, expiry time.Duration) *Session {
+func NewSession(sessionType Type, userID string, userAgent Agentable, permissions []string, originID string, origin string) *Session {
 	return &Session{
 		sessionID:   uuid.NewV4().String(),
 		sessionType: sessionType,
@@ -42,7 +42,7 @@ func NewSession(sessionType Type, userID string, userAgent Agentable, permission
 		permissions: permissions,
 		originID:    originID,
 		origin:      origin,
-		expiry:      expiry,
+		expiry:      sessionType.Timeout(),
 		createdAt:   time.Now(),
 	}
 }
