@@ -2,6 +2,7 @@ package auth
 
 import (
 	"errors"
+	"go/token"
 	"time"
 
 	"github.com/asdine/storm"
@@ -23,6 +24,7 @@ type Storable interface {
 	Save(session Sessionable) error
 	Get(session Sessionable, limit int) (Sessionables, error)
 	Delete(session Sessionable) error
+	Cleanup() error
 }
 
 // Record defines the structure for storing
@@ -123,6 +125,21 @@ func (s Store) Delete(session Sessionable) error {
 		s.db.DeleteStruct(Record{
 			SessionID: sessions.Get(i).SessionID(),
 		})
+	}
+
+	return nil
+}
+
+// Cleanup implements the Storable interface
+func (s Store) Cleanup() error {
+	var records []Record
+
+	if err := s.db.Select(NewTimeMatcher("CreatedAt", "Expiry", token.LEQ)).Find(&records); err != nil {
+		return err
+	}
+
+	for _, r := range records {
+		s.Delete(NewSession(r.SessionID, r.SessionType, r.UserID, nil, []string{}, r.OriginID, ""))
 	}
 
 	return nil

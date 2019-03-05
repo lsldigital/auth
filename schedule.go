@@ -2,6 +2,7 @@ package auth
 
 import (
 	"errors"
+	"log"
 	"time"
 )
 
@@ -43,7 +44,9 @@ func (s Scheduler) Start(interval time.Duration) error {
 		return ErrAlreadyRunning
 	}
 	task := func() {
-		// TODO: implement cleanup functionality
+		log.Printf("[Session Cleanup Scheduler] Started at %s\n", time.Now())
+		s.store.Cleanup()
+		log.Printf("[Session Cleanup Scheduler] Ended at %s\n", time.Now())
 	}
 	go func() {
 		s.running = true
@@ -51,6 +54,7 @@ func (s Scheduler) Start(interval time.Duration) error {
 
 		ticker := time.NewTicker(interval)
 		defer ticker.Stop()
+
 		for {
 			select {
 			case <-ticker.C:
