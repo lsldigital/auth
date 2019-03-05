@@ -120,8 +120,11 @@ func (s Store) Delete(session Sessionable) error {
 		return err
 	}
 	for i := 0; i < sessions.Length(); i++ {
-		s.db.DeleteStruct(sessions.Get(i))
+		s.db.DeleteStruct(Record{
+			SessionID: sessions.Get(i).SessionID(),
+		})
 	}
+
 	return nil
 }
 
