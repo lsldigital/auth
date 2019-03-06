@@ -29,7 +29,7 @@ type Storable interface {
 // Record defines the structure for storing
 // information in the store
 type Record struct {
-	SessionID   string `storm:"id,index"`
+	SessionID   string `storm:"id"`
 	SessionType Type
 	UserID      string `storm:"index"`
 	UABrowser   string
