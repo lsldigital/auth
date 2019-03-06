@@ -130,7 +130,7 @@ func (s Store) Delete(key Keyable) error {
 
 // Count implements the Storable interface
 func (s Store) Count(key Keyable) (int, error) {
-	return s.db.Select(q.And(getConditions(key)...)).Count(Record{})
+	return s.db.Select(q.And(getConditions(key)...)).Count(new(Record))
 }
 
 // Cleanup implements the Storable interface
