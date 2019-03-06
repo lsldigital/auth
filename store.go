@@ -2,7 +2,6 @@ package auth
 
 import (
 	"errors"
-	"go/token"
 	"time"
 
 	"github.com/asdine/storm"
@@ -132,7 +131,7 @@ func (s Store) Delete(session Sessionable) error {
 func (s Store) Cleanup() error {
 	var records []Record
 
-	if err := s.db.Select(NewTimeMatcher("CreatedAt", "Expiry", token.LEQ)).Find(&records); err != nil {
+	if err := s.db.Select(NewExpiredTimeMatcher("CreatedAt", "Expiry")).Find(&records); err != nil {
 		return err
 	}
 

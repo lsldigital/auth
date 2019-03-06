@@ -1,21 +1,19 @@
 package auth
 
 import (
-	"go/constant"
-	"go/token"
 	"reflect"
+	"time"
 
 	"github.com/asdine/storm/q"
 )
 
-// NewTimeMatcher creates a Matcher for a given field1 and field2.
-func NewTimeMatcher(field1, field2 string, tok token.Token) q.Matcher {
-	return timeMatcherDelegate{Field1: field1, Field2: field2, Tok: tok}
+// NewExpiredTimeMatcher creates a Matcher for a given field1 and field2.
+func NewExpiredTimeMatcher(field1, field2 string) q.Matcher {
+	return timeMatcherDelegate{Field1: field1, Field2: field2}
 }
 
 type timeMatcherDelegate struct {
 	Field1, Field2 string
-	Tok            token.Token
 }
 
 func (r timeMatcherDelegate) Match(i interface{}) (bool, error) {
@@ -32,10 +30,10 @@ func (r timeMatcherDelegate) MatchValue(v *reflect.Value) (bool, error) {
 	if !field2.IsValid() {
 		return false, q.ErrUnknownField
 	}
-	return compare(field1.Interface(), field2.Interface(), r.Tok), nil
+	return compare(field1.Interface(), field2.Interface()), nil
 }
 
-func compare(a, b interface{}, tok token.Token) bool {
+func compare(a, b interface{}) bool {
 	typea, typeb := reflect.TypeOf(a), reflect.TypeOf(b)
 
 	if typea != nil && (typea.String() == "time.Time" || typea.String() == "*time.Time") &&
@@ -54,16 +52,13 @@ func compare(a, b interface{}, tok token.Token) bool {
 			valb = valb.Elem()
 		}
 
-		valc := vala.MethodByName("Add").Call([]reflect.Value{valb})[0]
-
-		var x, y int64
-		x = 1
-		if vala.MethodByName("Equal").Call([]reflect.Value{valc})[0].Bool() {
-			y = 1
-		} else if vala.MethodByName("Before").Call([]reflect.Value{valc})[0].Bool() {
-			y = 2
+		timec, ok := vala.MethodByName("Add").Call([]reflect.Value{valb})[0].Interface().(time.Time)
+		if !ok {
+			return true
 		}
-		return constant.Compare(constant.MakeInt64(x), tok, constant.MakeInt64(y))
+
+		return time.Now().Truncate(time.Hour).After(timec)
+
 	}
 
 	return false
