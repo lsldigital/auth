@@ -44,9 +44,9 @@ func (s Scheduler) Start(interval time.Duration) error {
 		return ErrAlreadyRunning
 	}
 	task := func() {
-		log.Printf("[Session Cleanup Scheduler] Started at %s\n", time.Now())
+		log.Printf("[Session Cleanup Scheduler] Started at %s\n", time.Now().Format(time.RFC1123Z))
 		s.store.Cleanup()
-		log.Printf("[Session Cleanup Scheduler] Ended at %s\n", time.Now())
+		log.Printf("[Session Cleanup Scheduler] Ended at %s\n", time.Now().Format(time.RFC1123Z))
 	}
 	go func() {
 		s.running = true
