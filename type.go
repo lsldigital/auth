@@ -4,7 +4,8 @@ import "time"
 
 // Session types
 const (
-	TypeSessionRedirection Type = iota
+	TypeSessionUnknown Type = iota
+	TypeSessionRedirection
 	TypeSessionAuthorization
 )
 
