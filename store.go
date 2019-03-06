@@ -21,8 +21,8 @@ var (
 // Storable stores session information in <any> store
 type Storable interface {
 	Save(session Sessionable) error
-	Get(session Sessionable, limit int) (Sessionables, error)
-	Delete(session Sessionable) error
+	Get(key Keyable, limit int) (Sessionables, error)
+	Delete(key Keyable) error
 	Cleanup() error
 }
 
@@ -75,10 +75,10 @@ func (s Store) Save(session Sessionable) error {
 }
 
 // Get implements the Storable interface
-func (s Store) Get(session Sessionable, limit int) (Sessionables, error) {
+func (s Store) Get(key Keyable, limit int) (Sessionables, error) {
 	var records []Record
 
-	query := s.db.Select(q.And(getConditions(session)...))
+	query := s.db.Select(q.And(getConditions(key)...))
 	if limit > 0 {
 		query = query.Limit(limit)
 	}
@@ -113,8 +113,8 @@ func (s Store) Get(session Sessionable, limit int) (Sessionables, error) {
 }
 
 // Delete implements the Storable interface
-func (s Store) Delete(session Sessionable) error {
-	sessions, err := s.Get(session, NoLimit)
+func (s Store) Delete(key Keyable) error {
+	sessions, err := s.Get(key, NoLimit)
 	if err != nil {
 		return err
 	}
@@ -143,13 +143,13 @@ func (s Store) Cleanup() error {
 }
 
 // getConditions returns a list of conditions for indexed fields
-func getConditions(session Sessionable) []q.Matcher {
+func getConditions(key Keyable) []q.Matcher {
 	var (
 		conditions []q.Matcher
 
-		sessionID = session.SessionID()
-		userID    = session.UserID()
-		originID  = session.OriginID()
+		sessionID = key.SessionID()
+		userID    = key.UserID()
+		originID  = key.OriginID()
 	)
 	if sessionID != "" {
 		conditions = append(conditions, q.Eq("SessionID", sessionID))
