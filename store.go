@@ -23,6 +23,7 @@ type Storable interface {
 	Save(session Sessionable) error
 	Get(key Keyable, limit int) (Sessionables, error)
 	Delete(key Keyable) error
+	Count(key Keyable) (int, error)
 	Cleanup() error
 }
 
@@ -125,6 +126,11 @@ func (s Store) Delete(key Keyable) error {
 	}
 
 	return nil
+}
+
+// Count implements the Storable interface
+func (s Store) Count(key Keyable) (int, error) {
+	return s.db.Select(q.And(getConditions(key)...)).Count(Record{})
 }
 
 // Cleanup implements the Storable interface
