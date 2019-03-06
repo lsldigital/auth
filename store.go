@@ -142,7 +142,7 @@ func (s Store) Cleanup() error {
 	}
 
 	for _, r := range records {
-		s.Delete(NewSession(r.SessionID, r.SessionType, r.UserID, nil, []string{}, r.OriginID, ""))
+		s.Delete(NewKey(r.SessionID, r.UserID, r.OriginID))
 	}
 
 	return nil
