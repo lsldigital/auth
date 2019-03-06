@@ -99,17 +99,15 @@ func (s Store) Get(session Sessionable, limit int) (Sessionables, error) {
 			os:      r.UAOS,
 			device:  r.UADevice,
 		}
-		sessions = append(sessions, Session{
-			sessionID:   r.SessionID,
-			sessionType: r.SessionType,
-			userID:      r.UserID,
-			userAgent:   ua,
-			permissions: r.Permissions,
-			originID:    r.OriginID,
-			origin:      r.Origin,
-			expiry:      r.Expiry,
-			createdAt:   r.CreatedAt,
-		})
+		sessions = append(sessions, *NewSession(
+			r.SessionID,
+			r.SessionType,
+			r.UserID,
+			ua,
+			r.Permissions,
+			r.OriginID,
+			r.Origin,
+		))
 	}
 
 	return sessions, nil
