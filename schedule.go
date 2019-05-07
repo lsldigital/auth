@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// Schedulable errors
+// Schedulator errors
 var (
 	ErrAlreadyRunning = errors.New("scheduler already running")
 	ErrNotRunning     = errors.New("scheduler not running")
@@ -14,14 +14,14 @@ var (
 	ErrTimeout        = errors.New("timed out")
 )
 
-// Schedulable cleans expired sessions in <any> store
-type Schedulable interface {
+// Schedulator cleans expired sessions in <any> store
+type Schedulator interface {
 	Start(interval time.Duration) error
 	Stop() error
 	IsRunning() bool
 }
 
-// Scheduler implements the Schedulable interface
+// Scheduler implements the Schedulator interface
 type Scheduler struct {
 	store    Storable
 	running  bool
@@ -38,7 +38,7 @@ func NewScheduler(store Storable) *Scheduler {
 	return scheduler
 }
 
-// Start implements the Schedulable interface
+// Start implements the Schedulator interface
 func (s Scheduler) Start(interval time.Duration) error {
 	if s.running {
 		return ErrAlreadyRunning
@@ -69,7 +69,7 @@ func (s Scheduler) Start(interval time.Duration) error {
 	return nil
 }
 
-// Stop implements the Schedulable interface
+// Stop implements the Schedulator interface
 func (s Scheduler) Stop() error {
 	if !s.running {
 		return ErrNotRunning
@@ -87,7 +87,7 @@ func (s Scheduler) Stop() error {
 	}
 }
 
-// IsRunning implements the Schedulable interface
+// IsRunning implements the Schedulator interface
 func (s Scheduler) IsRunning() bool {
 	return s.running
 }
