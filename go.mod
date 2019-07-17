@@ -1,4 +1,4 @@
-module go.lsl.digital/gocipe/auth
+module go.lsl.digital/lardwaz/auth
 
 require (
 	github.com/DataDog/zstd v1.4.0 // indirect
