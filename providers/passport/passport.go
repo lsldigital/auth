@@ -17,6 +17,7 @@ type Provider struct {
 	logger     *log.Logger
 	cookieName string
 	endpoints  *authsdk.Endpoints
+	options    *authsdk.Options
 	Client     *passportsdk.Client
 }
 
@@ -45,6 +46,16 @@ func New(creds authsdk.Credentials, cookieName string, logger *log.Logger) *Prov
 // Name returns the name of provider
 func (p Provider) Name() string {
 	return p.name
+}
+
+// Options returns the provider options
+func (p Provider) Options() *authsdk.Options {
+	return p.options
+}
+
+// SetOptions sets the provider options
+func (p *Provider) SetOptions(options *authsdk.Options) {
+	p.options = options
 }
 
 // Endpoints returns the provider endpoints
